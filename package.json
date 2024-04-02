@@ -1,11 +1,12 @@
 {
   "name": "clean-template",
   "version": "1.0.0",
-  "description": "",
+  "description": "A clean and minimal Node.js template with Express.js and typescript for starting server-side applications",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start:prod":"node ./dist/server.js",
-    "start:dev":"ts-node-dev --respawn --transpile-only src/server.ts",
+    "start:prod": "node ./dist/server.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "ts:build": "tsc",
     "lint": "eslint src --ignore-path .eslintignore --ext .ts",
     "lint:fix": "npx eslint src --fix",
@@ -13,7 +14,15 @@
     "prettier:fix": "npx prettier --write src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "javascript",
+    "node.js",
+    "express",
+    "typescript",
+    "eslint",
+    "prettier",
+    "template"
+  ],
   "author": "Rakibur Rahman Rakib",
   "license": "ISC",
   "dependencies": {
