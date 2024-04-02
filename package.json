@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A clean and minimal Node.js template with Express.js and typescript for starting server-side applications",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start:prod": "node ./dist/server.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
