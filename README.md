@@ -31,7 +31,7 @@ npm install
 
 ```
 PORT=3000
-DATABASE_URL="example DB URL"
+DATABASE_URL="Your Database Connection String"
 ```
 
 ### 4.  Development
@@ -47,6 +47,14 @@ npm run lint      # Run TypeScript linting
 npm run lint:fix  # Run TypeScript linting and automatically fix issues
 npm run prettier:format  # Format TypeScript code using Prettier
 npm run prettier:fix     # Format and fix TypeScript code using Prettier
+
+```
+
+### 5.  Remove the current GitHub remote origin and add a new one
+
+```
+git remote rm origin
+git remote add origin https://github.com/username/reponame.git
 
 ```
 
