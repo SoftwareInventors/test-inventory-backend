@@ -27,10 +27,11 @@ cd clean-template
 ```
 npm install
 ```
-### 3. Set Environment Variables
+### 3. Create .env file and Set Environment variables 
 
 ```
 PORT=3000
+DATABASE_URL="example DB URL"
 ```
 
 ### 4.  Development
