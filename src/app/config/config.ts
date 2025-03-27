@@ -1,6 +1,15 @@
 import path from 'path';
 import dotenv from 'dotenv';
 
+declare const process: {
+  env: {
+    NODE_ENV: string;
+    PORT: string;
+    DATABASE_URL: string;
+  };
+  cwd(): string;
+};
+
 // join cwd and .env file
 const envPath = path.join(process.cwd(), '.env');
 
