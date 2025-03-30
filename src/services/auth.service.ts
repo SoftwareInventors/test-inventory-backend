@@ -7,9 +7,6 @@ import { ILoginUser } from '../interfaces/auth.interface';
 // import { generateCustomId } from '../utils/generateCustomId';
 
 export const registerUser = async (userRegistrationPayload: IUser) => {
-  // const user = await User.findOne({ email: userPayload.email });
-
-  // todo: prevent duplicate user creation
 
   userRegistrationPayload.role = User_Role.ADMIN;
 
