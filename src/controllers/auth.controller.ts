@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { loginUser, registerUser } from '../services/auth.service';
 import httpStatus from 'http-status';
+import { IUser } from '../interfaces/user.interface';
+import { ILoginUser } from '../interfaces/auth.interface';
 
 export async function handleRegisterUser(
   req: Request,
@@ -8,9 +10,9 @@ export async function handleRegisterUser(
   next: NextFunction,
 ) {
   try {
-    const userPayload = req.body;
+    const userRegistrationPayload: IUser = req.body;
 
-    const user = await registerUser(userPayload);
+    const user = await registerUser(userRegistrationPayload);
 
     res.status(httpStatus.CREATED).json({
       success: true,
@@ -29,7 +31,7 @@ export async function handleLoginUser(
   next: NextFunction,
 ) {
   try {
-    const userLoginPayload = req.body;
+    const userLoginPayload:ILoginUser = req.body;
 
     const { accessToken } = await loginUser(userLoginPayload);
 

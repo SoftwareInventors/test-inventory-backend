@@ -6,18 +6,18 @@ import config from '../app/config/config';
 import { ILoginUser } from '../interfaces/auth.interface';
 // import { generateCustomId } from '../utils/generateCustomId';
 
-export const registerUser = async (userPayload: IUser) => {
+export const registerUser = async (userRegistrationPayload: IUser) => {
   // const user = await User.findOne({ email: userPayload.email });
 
   // todo: prevent duplicate user creation
 
-  userPayload.role = User_Role.ADMIN;
+  userRegistrationPayload.role = User_Role.ADMIN;
 
   // todo: Generated custom id
   // const customId = await generateCustomId(userPayload.role);
   // userPayload.id = customId;
 
-  const newUser = await User.create(userPayload);
+  const newUser = await User.create(userRegistrationPayload);
   return newUser;
 };
 

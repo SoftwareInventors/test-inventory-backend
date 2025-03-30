@@ -1,7 +1,8 @@
 import { User_Role, User_Status } from './../constants/user.constant';
 import { Document } from 'mongoose';
 export interface IUser extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   serverId?: string;
