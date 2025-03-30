@@ -30,28 +30,20 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
-// hash the password before saving
 UserSchema.pre('save', async function (next) {
+  // Hash password if modified
   if (this.isModified('password')) {
-    const hashedPassword = await bcrypt.hash(
-      this.password,
-      config.bcrypt_salt_rounds,
-    );
-    this.password = hashedPassword;
+    this.password = await bcrypt.hash(this.password, config.bcrypt_salt_rounds);
   }
-  next();
-});
 
-// prevent duplicate user
-UserSchema.pre('save', async function (next) {
+  // Prevent duplicate email
   if (this.isModified('email')) {
     const existingUser = await User.findOne({ email: this.email });
     if (existingUser) {
-      throw new Error(
-        'User with this email address already exists!Try with another email',
-      );
+      return next(new Error('User with this email address already exists!'));
     }
   }
+
   next();
 });
 
