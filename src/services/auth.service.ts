@@ -1,6 +1,6 @@
 import { IUser } from '../interfaces/user.interface';
 import { User } from '../models/user.model';
-import { User_Role} from '../constants/user.constant';
+import { User_Role } from '../constants/user.constant';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../app/config/config';
 import { ILoginUser } from '../interfaces/auth.interface';

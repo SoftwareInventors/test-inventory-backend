@@ -31,7 +31,7 @@ export async function handleLoginUser(
   next: NextFunction,
 ) {
   try {
-    const userLoginPayload:ILoginUser = req.body;
+    const userLoginPayload: ILoginUser = req.body;
 
     const { accessToken } = await loginUser(userLoginPayload);
 
