@@ -7,7 +7,6 @@ import { ILoginUser } from '../interfaces/auth.interface';
 // import { generateCustomId } from '../utils/generateCustomId';
 
 export const registerUser = async (userRegistrationPayload: IUser) => {
-
   userRegistrationPayload.role = User_Role.ADMIN;
 
   // todo: Generated custom id
