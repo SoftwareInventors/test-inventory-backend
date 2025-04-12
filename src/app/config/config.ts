@@ -7,6 +7,7 @@ const envPath = path.join(process.cwd(), '.env.development');
 dotenv.config({ path: envPath });
 
 export default {
+  env: process.env.NODE_ENV,
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
   access_token_secret_key: process.env.ACCESS_TOKEN_SECRET_KEY,
