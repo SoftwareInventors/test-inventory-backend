@@ -3,12 +3,25 @@ import {
   handleLoginUser,
   handleRegisterUser,
 } from '../controllers/auth.controller';
+import { validateRequest } from '../middlewares/validateRequest';
+import {
+  userLoginValidationSchema,
+  userRegistrationValidationSchema,
+} from '../schemas/auth.schema';
 
 const router = express.Router();
 
-router.post('/register', handleRegisterUser);
+router.post(
+  '/register',
+  validateRequest(userRegistrationValidationSchema),
+  handleRegisterUser,
+);
 
-router.post('/login', handleLoginUser);
+router.post(
+  '/login',
+  validateRequest(userLoginValidationSchema),
+  handleLoginUser,
+);
 
 //** will implement these services later! */
 
