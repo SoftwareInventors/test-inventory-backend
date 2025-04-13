@@ -1,13 +1,15 @@
+import httpStatus from 'http-status';
 import { IUser } from '../interfaces/user.interface';
 import { User } from '../models/user.model';
-import { User_Role } from '../constants/user.constant';
+import { User_Role, User_Status } from '../constants/user.constant';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../app/config/config';
 import { ILoginUser } from '../interfaces/auth.interface';
+import { ApiError } from '../errors/ApiError';
+import { comparePassword } from '../utils/compasePassword';
 // import { generateCustomId } from '../utils/generateCustomId';
 
 export const registerUser = async (userRegistrationPayload: IUser) => {
-
   userRegistrationPayload.role = User_Role.ADMIN;
 
   // todo: Generated custom id
@@ -21,28 +23,34 @@ export const registerUser = async (userRegistrationPayload: IUser) => {
 export const loginUser = async (userLoginPayload: ILoginUser) => {
   const user = await User.findOne({ email: userLoginPayload.email });
 
-  // todo: we will implement this when we will have the ApiError class
-  // if (!user) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, 'User Not Found!');
-  // }
+  // check whether user has an account
+  if (!user) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `User with this ${userLoginPayload.email} email is Not Found!`,
+    );
+  }
 
-  // todo: we will implement this when we will have the ApiError class
-  // if (
-  //   user?.status === User_Status.BLOCKED ||
-  //   user?.status === User_Status.INACTIVE
-  // ) {
-  //   throw new ApiError(httpStatus.FORBIDDEN, 'User is Blocked!');
-  // }
+  // check whether user is blocked or inactive
+  if (
+    user?.status === User_Status.BLOCKED ||
+    user?.status === User_Status.INACTIVE
+  ) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      `User with this ${userLoginPayload.email} email is Blocked or Inactive!`,
+    );
+  }
 
-  // const isPasswordMatched = await comparePassword(
-  //   userLoginPayload.password,
-  //   user?.password,
-  // );
+  // check password is matched
+  const isPasswordMatched = await comparePassword(
+    userLoginPayload.password,
+    user?.password,
+  );
 
-  // todo: we will implement this when we will have the ApiError class
-  // if (!isPasswordMatched) {
-  //   throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password!');
-  // }
+  if (!isPasswordMatched) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password!');
+  }
 
   const jwtPayload: JwtPayload = {
     email: user?.email,
