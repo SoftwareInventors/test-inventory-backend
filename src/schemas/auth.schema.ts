@@ -6,7 +6,6 @@ export const userRegistrationValidationSchema = z.object({
     firstName: z.string().min(1, 'First Name is required'),
     lastName: z.string().min(1, 'Last Name is required'),
     email: z.string().email('Invalid email'),
-    serverId: z.string().optional(),
     role: z.enum([User_Role.ADMIN, User_Role.MODERATOR]),
     status: z
       .enum([User_Status.ACTIVE, User_Status.INACTIVE, User_Status.BLOCKED])

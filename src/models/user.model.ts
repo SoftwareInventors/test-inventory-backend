@@ -10,7 +10,6 @@ const UserSchema = new Schema<IUser>(
     lastName: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    serverId: { type: String, required: false },
     role: {
       type: String,
       enum: Object.values(User_Role),
