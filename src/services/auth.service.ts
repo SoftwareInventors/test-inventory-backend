@@ -7,14 +7,20 @@ import config from '../app/config/config';
 import { ILoginUser } from '../interfaces/auth.interface';
 import { ApiError } from '../errors/ApiError';
 import { comparePassword } from '../utils/compasePassword';
-// import { generateCustomId } from '../utils/generateCustomId';
 
 export const registerUser = async (userRegistrationPayload: IUser) => {
-  userRegistrationPayload.role = User_Role.ADMIN;
+  const userExists = await User.findOne({
+    email: userRegistrationPayload.email,
+  });
 
-  // todo: Generated custom id
-  // const customId = await generateCustomId(userPayload.role);
-  // userPayload.id = customId;
+  if (userExists) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      `User with this ${userRegistrationPayload.email} email already exists!`,
+    );
+  }
+  // check whether user has an account
+  userRegistrationPayload.role = User_Role.ADMIN;
 
   const newUser = await User.create(userRegistrationPayload);
   return newUser;
@@ -26,19 +32,22 @@ export const loginUser = async (userLoginPayload: ILoginUser) => {
   // check whether user has an account
   if (!user) {
     throw new ApiError(
-      httpStatus.NOT_FOUND,
+      httpStatus.UNAUTHORIZED,
       `User with this ${userLoginPayload.email} email is Not Found!`,
     );
   }
 
   // check whether user is blocked or inactive
-  if (
-    user?.status === User_Status.BLOCKED ||
-    user?.status === User_Status.INACTIVE
-  ) {
+  if (user?.status === User_Status.INACTIVE) {
     throw new ApiError(
       httpStatus.FORBIDDEN,
-      `User with this ${userLoginPayload.email} email is Blocked or Inactive!`,
+      'User is inactive! Please contact admin.',
+    );
+  }
+  if (user?.status === User_Status.BLOCKED) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      'Your account has been suspended. Please contact our support team for assistance.',
     );
   }
 
@@ -52,9 +61,16 @@ export const loginUser = async (userLoginPayload: ILoginUser) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password!');
   }
 
+  // Update the lastLogin field with the current date and time
+  user.lastLogin = new Date();
+
+  await user.save();
+
   const jwtPayload: JwtPayload = {
+    _id: user?._id,
     email: user?.email,
     role: user?.role,
+    status: user?.status,
   };
 
   const accessToken = jwt.sign(
@@ -69,5 +85,16 @@ export const loginUser = async (userLoginPayload: ILoginUser) => {
     { expiresIn: '7d' },
   );
 
-  return { accessToken, refreshToken };
+  const userData = {
+    _id: user?._id,
+    firstName: user?.firstName,
+    lastName: user?.lastName,
+    email: user?.email,
+    role: user?.role,
+    status: user?.status,
+    companyName: user?.companyName,
+    phone: user?.phone,
+    lastLogin: user.lastLogin,
+  };
+  return { accessToken, refreshToken, userData };
 };

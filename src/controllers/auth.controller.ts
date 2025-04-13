@@ -33,7 +33,8 @@ export async function handleLoginUser(
   try {
     const userLoginPayload: ILoginUser = req.body;
 
-    const { accessToken } = await loginUser(userLoginPayload);
+    const { accessToken, refreshToken, userData } =
+      await loginUser(userLoginPayload);
 
     // res.cookie('refreshToken', refreshToken, {
     //   httpOnly: true,
@@ -42,9 +43,11 @@ export async function handleLoginUser(
 
     res.status(httpStatus.OK).json({
       success: true,
-      statusCode: httpStatus.CREATED,
-      message: 'User Logged-in successfully',
+      statusCode: httpStatus.OK,
+      message: 'User logged in successfully',
       accessToken,
+      refreshToken,
+      userData,
     });
   } catch (error) {
     next(error);

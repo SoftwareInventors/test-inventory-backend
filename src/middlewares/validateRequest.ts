@@ -1,23 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
-import { AnyZodObject } from 'zod';
+import { z } from 'zod';
 import { ApiError } from '../errors/ApiError';
 
-export const validateRequest = (schema: AnyZodObject) => {
+const validateRequest = (schema: z.ZodObject<any, any>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await schema.parseAsync({
+      await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
+        cookies: req.cookies,
       });
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Convert the Zod error to a more readable format
+        const message = 'Validation failed';
+        const validationError = JSON.stringify(error.errors);
 
-      req.body = result.body;
-      req.query = result.query;
-      req.params = result.params;
-      return next();
-    } catch (error: any) {
-      throw new ApiError(400, error.message);
+        // Create ApiError with properly formatted parameters
+        next(new ApiError(400, message, true, validationError));
+      } else {
+        next(error);
+      }
     }
   };
 };
+
+export default validateRequest;

@@ -3,11 +3,11 @@ import {
   handleLoginUser,
   handleRegisterUser,
 } from '../controllers/auth.controller';
-import { validateRequest } from '../middlewares/validateRequest';
 import {
   userLoginValidationSchema,
   userRegistrationValidationSchema,
 } from '../schemas/auth.schema';
+import validateRequest from '../middlewares/validateRequest';
 
 const router = express.Router();
 
