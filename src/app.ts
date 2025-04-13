@@ -3,6 +3,7 @@ import cors from 'cors';
 import { authRoutes } from './routes/auth.route';
 import { notFoundHandler } from './middlewares/notFoundHandler';
 import { globalErrorHandler } from './middlewares/globalErrorHandler';
+import { categoryRoutes } from './routes/category.route';
 
 const app: Application = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 //** APPLICATION ROUTES */
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1', categoryRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello From Test Inventory Backend!!');
