@@ -13,38 +13,90 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  // if it is a zod error then convert it to an ApiError
+  // Default error values
+  let statusCode = 500;
+  let message = 'Internal server error';
+  let errorMessages: Record<string, unknown>[] = [];
+  let stack = '';
+  let validationError = '';
+
+  // Handle Zod validation errors
   if (error instanceof ZodError) {
-    error = new ApiError(
-      400,
-      'Validation Error!',
-      true,
-      fromZodError(error, {
-        prefix: null,
-        includePath: true,
-      }).toString(),
-    );
+    statusCode = 400;
+    message = 'Validation failed';
+
+    const formattedError = fromZodError(error, {
+      prefix: null,
+      includePath: true,
+    });
+
+    validationError = formattedError.toString();
+
+    // Format validation errors for better client-side handling
+    errorMessages = error.errors.map((err) => ({
+      path: err.path.join('.'),
+      message: err.message,
+    }));
+  }
+  // Handle API errors
+  else if (error instanceof ApiError) {
+    statusCode = error.statusCode;
+    message = error.message;
+    validationError = error.validationError;
+
+    if (error.stack) {
+      stack = error.stack;
+    }
+
+    if (error.validationError) {
+      try {
+        // Try to parse validation errors to structured format
+        const parsedErrors = JSON.parse(error.validationError);
+        if (Array.isArray(parsedErrors)) {
+          errorMessages = parsedErrors;
+        }
+      } catch {
+        // If not parseable, use as string
+        errorMessages = [{ message: error.validationError }];
+      }
+    }
+  }
+  // Handle other errors
+  else {
+    message = error?.message || 'Internal server error';
+    if (error?.stack) {
+      stack = error.stack;
+    }
   }
 
-  // if unexpected error then convert it to an ApiError
-  if (!(error instanceof ApiError)) {
-    error = new ApiError(
-      500,
-      error.message || 'unexpected error',
-      false,
-      error.stack,
-    );
-  }
+  // Determine if message should be shown (authentication/authorization errors are always shown)
+  const isAuthError = statusCode === 401 || statusCode === 403;
+  const shouldShowMessage =
+    isAuthError ||
+    config.env === 'development' ||
+    (error instanceof ApiError && error.isPublic);
 
-  // hide the internal error message from the client
-  const message = error.isPublic
-    ? error.message
-    : 'Sorry!something went wrong in our internal server';
-
-  return res.status(error.statusCode).json({
+  // Prepare the response object
+  const responseData: Record<string, any> = {
     success: false,
-    message,
-    stack: config.env === 'development' ? error.stack : '',
-    validationError: error.validationError.length ? error.validationError : '',
-  });
+    statusCode,
+    message: shouldShowMessage ? message : 'Something went wrong',
+  };
+
+  // Include additional error details as appropriate
+  if (errorMessages.length > 0) {
+    responseData.errors = errorMessages;
+  }
+
+  // Only include stack trace and detailed errors in development
+  if (config.env === 'development') {
+    if (stack) {
+      responseData.stack = stack;
+    }
+    if (validationError) {
+      responseData.validationError = validationError;
+    }
+  }
+
+  return res.status(statusCode).json(responseData);
 };
