@@ -14,7 +14,6 @@ export const checkAuthorization = (
   res: Response,
   options: {
     requireAdmin?: boolean;
-    requireOwner?: boolean;
     ownerId?: string;
     customMessage?: string;
   },
@@ -31,19 +30,14 @@ export const checkAuthorization = (
     return false;
   }
 
-  const {
-    requireAdmin = false,
-    requireOwner = false,
-    ownerId,
-    customMessage,
-  } = options;
+  const { requireAdmin = false, ownerId, customMessage } = options;
 
   // Check user permissions
   const isAdmin = decodedUser.role === User_Role.ADMIN;
-  const isOwner = ownerId ? decodedUser._id === ownerId : false;
+  const isVerified = ownerId ? decodedUser._id === ownerId : false;
 
   // If owner is required and user is not owner
-  if (!isOwner) {
+  if (!isVerified) {
     res.status(httpStatus.FORBIDDEN).json({
       success: false,
       statusCode: httpStatus.FORBIDDEN,
@@ -57,16 +51,6 @@ export const checkAuthorization = (
       success: false,
       statusCode: httpStatus.FORBIDDEN,
       message: customMessage || 'Admin privileges required',
-    });
-    return false;
-  }
-
-  // If owner is required and user is neither admin nor owner
-  if (requireOwner && !isAdmin && !isOwner) {
-    res.status(httpStatus.FORBIDDEN).json({
-      success: false,
-      statusCode: httpStatus.FORBIDDEN,
-      message: customMessage || 'You are not authorized to perform this action',
     });
     return false;
   }

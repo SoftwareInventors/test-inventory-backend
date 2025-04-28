@@ -16,7 +16,7 @@ export const handleCreateProduct = async (
   try {
     // Check authorization
     const isAuthorized = checkAuthorization(req, res, {
-      requireOwner: true,
+      requireAdmin: true,
       ownerId: req.body.user,
       customMessage: 'You are not authorized to create a product',
     });
@@ -71,7 +71,7 @@ export const handleUpdateProduct = async (
   try {
     // Check authorization
     const isAuthorized = checkAuthorization(req, res, {
-      requireOwner: true,
+      requireAdmin: true,
       ownerId: req.body.user,
       customMessage: 'You are not authorized to update this product',
     });
@@ -99,7 +99,7 @@ export const handleDeleteProduct = async (
   try {
     // Check authorization
     const isAuthorized = checkAuthorization(req, res, {
-      requireOwner: true,
+      requireAdmin: true,
       ownerId: req.body.user,
       customMessage: 'You are not authorized to delete this product',
     });
