@@ -7,4 +7,5 @@ export interface IProduct extends Document {
   category: Schema.Types.ObjectId;
   price: number;
   user: Schema.Types.ObjectId;
+  productCost: number;
 }

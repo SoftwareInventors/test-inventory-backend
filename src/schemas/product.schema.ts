@@ -30,6 +30,12 @@ export const productValidateSchema = z.object({
       })
       .min(0, 'Price must be a positive number'),
 
+    productCost: z
+      .number({
+        required_error: 'Product cost is required',
+        invalid_type_error: 'Product cost must be a number',
+      })
+      .min(0, 'Product cost must be a positive number'),
     user: z
       .string({
         required_error: 'User ID is required',

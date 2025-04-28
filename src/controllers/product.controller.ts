@@ -1,6 +1,11 @@
 import httpStatus from 'http-status';
 import { Request, Response, NextFunction } from 'express';
-import { createProduct, getAllProducts } from '../services/product.service';
+import {
+  createProduct,
+  deleteProduct,
+  getAllProducts,
+  updateProduct,
+} from '../services/product.service';
 import { checkAuthorization } from '../utils/authorization';
 
 export const handleCreateProduct = async (
@@ -52,6 +57,61 @@ export const handleGetAllProduct = async (
       statusCode: httpStatus.OK,
       message: 'Products fetched successfully',
       data: products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleUpdateProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Check authorization
+    const isAuthorized = checkAuthorization(req, res, {
+      requireOwner: true,
+      ownerId: req.body.user,
+      customMessage: 'You are not authorized to update this product',
+    });
+
+    if (!isAuthorized) return;
+
+    const product = await updateProduct(req.params.id, req.body);
+
+    res.status(httpStatus.OK).json({
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product updated successfully',
+      data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleDeleteProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    // Check authorization
+    const isAuthorized = checkAuthorization(req, res, {
+      requireOwner: true,
+      ownerId: req.body.user,
+      customMessage: 'You are not authorized to delete this product',
+    });
+
+    if (!isAuthorized) return;
+
+    await deleteProduct(req.params.id);
+
+    res.status(httpStatus.OK).json({
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Product deleted successfully',
     });
   } catch (error) {
     next(error);

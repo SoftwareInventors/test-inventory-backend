@@ -3,6 +3,7 @@ import { User_Role, User_Status } from '../constants/user.constant';
 
 export const userRegistrationValidationSchema = z.object({
   body: z.object({
+    userId: z.string().optional(),
     firstName: z
       .string({
         required_error: 'First Name is required',

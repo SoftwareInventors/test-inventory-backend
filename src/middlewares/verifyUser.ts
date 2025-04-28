@@ -3,10 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ApiError } from '../errors/ApiError';
 import config from '../app/config/config';
+import { JwtPayload } from 'jsonwebtoken';
 
 declare module 'express' {
   interface Request {
-    user?: any;
+    user?: JwtPayload;
   }
 }
 
@@ -25,10 +26,13 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
     const token = authHeader.split(' ')[1];
 
     // Verify token
-    const decoded = jwt.verify(token, config.access_token_secret_key as string);
+    const decoded = jwt.verify(
+      token,
+      config.access_token_secret_key as string,
+    ) as JwtPayload;
 
     // Add user to request
-    req.user = decoded;
+    req.user = decoded as JwtPayload;
 
     next();
   } catch (error) {
